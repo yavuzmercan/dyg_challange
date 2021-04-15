@@ -1,0 +1,35 @@
+@import '../../styles/utils/variable.scss';
+
+//Submit Button
+.addlink{
+	padding: 5px;
+	text-align: left;
+	width: 100%;
+	background-color: #f7f7f7;
+	border: 1px solid #ebebeb;
+	border-radius: 5px;
+	color:#000;
+	font-size:18px;
+	font-weight: 700;
+	margin-bottom: 15px;
+	line-height: 57px;
+    display: block;
+    margin-top: 50px;
+	
+	span{
+		padding: 15px 25px;
+		border-radius: 5px;
+		line-height: normal;
+		font-size: 24px;
+		text-align:center;
+		background-color: #ececec;
+		border: 1px solid #c7c7c7;
+		margin-right: 20px;
+		float:left;
+	}
+	
+	&:hover{
+		text-decoration:none;
+		color:#000;
+	}
+}

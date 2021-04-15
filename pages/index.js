@@ -1,65 +1,184 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import {useEffect, useState} from 'react';
+import {Col, Container, Row} from 'react-bootstrap';
+import SubmitButton from '../components/submitbutton';
+import Items from '../components/listItem';
+import Filter from '../components/filter';
+import ComfirmModal from '../components/comfirmModal';
+import Notification from '../components/notification';
+import styles from '../styles/modules/home.module.scss';
+import Pagination from '../components/pagination';
 
 export default function Home() {
-  return (
-    <div className={styles.container}>
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
+    //Define Variable
+    const [storedData, setStoredData] = useState([
+        {
+            "title": "İlk Kayıt",
+            "url": "http://www.google.com",
+            "vote": 0,
+        }, {
+            "title": "İkinci Kayıt",
+            "url": "http://www.google.com",
+            "vote": 0,
+        }
+    ]);
+    const [showDeleteConfirm, setShowDeleteComfirm] = useState(false);
+    const [deletedItemTitle, setDeletedItemTitle] = useState('');
+    const [deletedItemIndex, setDeletedItemIndex] = useState();
+    const [showNotification, setshowNotification] = useState(false);
+    const [localStoreData, setLocalStoreData] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [dataPerPage] = useState(5)
 
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
+    //Up Vote Button
+    const handleVoteUp = (index) => {
+      const data = localStoreData;
+      data[index].vote += 1;
 
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
+      updateStateData(data);
+    }
 
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
+    //Down Vote Button
+    const handleVoteDown = (index) => {
+      const data = localStoreData;
+      if(data[index].vote > 0){
+        data[index].vote -= 1;
 
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
+        updateStateData(data);
+      }
+    }
 
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
+    //Update Data
+    const updateStateData = (data) => {
+      localStorage.setItem('data', JSON.stringify(data));
+      setLocalStoreData(JSON.parse(localStorage.getItem("data")));
+      sortingData(localStorage.getItem("orderType"))
+    }
 
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
-    </div>
-  )
+    //Click Hover Delete Button
+    const handleDeleteItem = (index) => {
+      const data = localStoreData;
+      setShowDeleteComfirm(true);
+      setDeletedItemTitle(data[index].title);
+      setDeletedItemIndex(index);      
+    }
+
+    //Delete Comfirm Modal Cancel Button
+    const handleCloseModal = () => {
+      setShowDeleteComfirm(false);
+    }
+
+    //Delete Comfirm Modal Ok Button
+    const handleOkbuttonModal = () => {
+      const data = localStoreData;
+      data.splice(deletedItemIndex, 1);
+      
+      updateStateData(data);
+
+      setshowNotification(true);
+      setShowDeleteComfirm(false);
+      setTimeout(() => {
+        setshowNotification(false);
+        setDeletedItemTitle('');
+        setDeletedItemIndex('');
+      },1200);
+    }
+
+    //Sorting Data
+    const sortingData = (filterType) => {
+      let sortData = [...localStoreData];
+      sortData.sort((a, b) => {
+        if (a.vote < b.vote) {
+          return -1;
+        }
+        if (a.vote > b.vote) {
+          return 1;
+        }
+        return 0;
+      });
+
+      if (filterType == 'desc') {
+        sortData = sortData.reverse();
+      }
+      setLocalStoreData(sortData);
+      localStorage.setItem('data', JSON.stringify(sortData));
+    }
+
+
+    // Filter Change Handle
+    const handleFilterChange = (e) => {
+      localStorage.setItem('orderType', e.target.value);
+      sortingData(e.target.value);
+    }
+
+    //Get LocalStorage Data
+    useEffect(() => {
+
+      let lsData = JSON.parse(localStorage.getItem("data"));
+      if(!lsData){
+        localStorage.setItem("data", JSON.stringify(storedData))
+      }
+
+      setLocalStoreData(JSON.parse(localStorage.getItem("data")));
+      localStorage.setItem('orderType',0);    
+    },[]);
+
+
+    //Define Pagination Variable
+    const indexOfLastData = currentPage * dataPerPage;
+    const indexOfFirstData = indexOfLastData - dataPerPage;
+    const currentData= localStoreData.slice(indexOfFirstData, indexOfLastData);
+    const totalPagesNum = Math.ceil(localStoreData.length /dataPerPage);
+
+    return (
+        <Container>
+            {
+            showDeleteConfirm ? 
+              <ComfirmModal 
+                modalOkAction={() => handleOkbuttonModal}
+                modalCloseClick={() => handleCloseModal} 
+                title={deletedItemTitle.toUpperCase()}/> 
+                : null
+            }
+            <Row>
+                <Col md={{span: 6,offset: 3}}>
+                  {
+                    showNotification ? 
+                    <Notification 
+                    message={"deleted."}
+                    title={deletedItemTitle.toUpperCase()}
+                    /> : 
+                    null
+                  }
+                    <SubmitButton/>
+                    <div className={styles.links}>
+                        <Filter filterChange={handleFilterChange} />
+                        <ul className={styles.links__container}>
+                           {
+                          currentData.map((item,index) => ( <Items 
+                                  key={index} 
+                                  deleteItem={() => handleDeleteItem(index)}
+                                  voteUpFunc={() => handleVoteUp(index)} 
+                                  voteDownFunc={() => handleVoteDown(index)} 
+                                  index={item.id} 
+                                  item={item}/>
+                            ))
+                          } 
+                               
+                        </ul>
+                    </div>
+                </Col>
+            </Row>
+            <Row>
+            <Col md={{span: 6,offset: 3}}>
+              <Pagination 
+                pages = {totalPagesNum} 
+                setCurrentPage  = {setCurrentPage}
+                currentData = {currentData} 
+                sortedEmployees = {localStoreData}
+                />
+              </Col>
+            </Row>
+        </Container>
+    )
 }

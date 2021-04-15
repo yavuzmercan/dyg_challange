@@ -1,0 +1,14 @@
+@import './../utils/variable.scss';
+
+//Links Style
+.links{
+	padding-top: 10px;
+	border-top: 3px solid #ececec;
+	
+	&__container{
+		list-style:none;
+		padding:0;
+		margin:0;
+	}
+
+}
