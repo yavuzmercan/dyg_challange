@@ -4,11 +4,11 @@ import styles from './index.module.scss'
 export default function Filter(props) {
 
 //Define Variable
-const [orderType, setOrderType] = useState('');
+const [orderType, setOrderType] = useState(0);
 
 //Get Order Type
 useEffect(() => {
-	setOrderType(localStorage.getItem('orderType'));
+	setOrderType(localStorage.getItem('orderType') ? localStorage.getItem('orderType') : 0);
 });
 
 return (
