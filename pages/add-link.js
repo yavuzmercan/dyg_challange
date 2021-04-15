@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
+import { v4 as uuidv4 } from 'uuid';
 
 import styles from '../styles/modules/addlink.module.scss'
 import Link from 'next/link'
@@ -15,6 +16,7 @@ export default function AddLink() {
   const [showNotification, setshowNotification] = useState(false);
   const [allData, setAllData] = useState([]);
   const [newItem, setNewItem] = useState({
+    id: uuidv4(),
     title:'',
     url:'',
     vote:0
@@ -96,7 +98,5 @@ export default function AddLink() {
             </Col>
           </Row>
         </Container>
-
- 
   )
 }
