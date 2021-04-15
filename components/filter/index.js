@@ -1,19 +1,18 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import styles from './index.module.scss'
 
 export default function Filter(props) {
 
 //Define Variable
-let orderType = '';
+const [orderType, setOrderType] = useState('');
 
 //Get Order Type
 useEffect(() => {
-	orderType = localStorage.getItem('orderType');
-}, []);
+	setOrderType(localStorage.getItem('orderType'));
+});
 
 return (
-    <select 
-	defaultValue={orderType}
+    <select value={orderType}
 	onChange={props.filterChange} 
 	className={`form-control ${styles.links__filter}`}>
 		<option value="0">Order by</option>
