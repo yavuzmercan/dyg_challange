@@ -54,11 +54,11 @@ export default function Home() {
         if(data[i].id == id){
           if(data[i].vote > 0){
             data[i].vote -= 1;
+            updateStateData(data);
           }
-          
         }
       }
-        updateStateData(data);
+        
     }
 
     //Update Data
@@ -69,22 +69,36 @@ export default function Home() {
     }
 
     //Click Hover Delete Button
-    const handleDeleteItem = (index) => {
+    const handleDeleteItem = (id) => {
       const data = localStoreData;
+
       setShowDeleteComfirm(true);
-      setDeletedItemTitle(data[index].title);
-      setDeletedItemIndex(index);      
+
+      for(var i = 0; i < data.length; i++){
+        if(data[i].id == id){
+          setDeletedItemTitle(data[i].title);
+          setDeletedItemIndex(data[i].id);   
+        }
+      }
     }
 
     //Delete Comfirm Modal Cancel Button
     const handleCloseModal = () => {
       setShowDeleteComfirm(false);
+      setDeletedItemTitle('');
+        setDeletedItemIndex('');
     }
 
     //Delete Comfirm Modal Ok Button
     const handleOkbuttonModal = () => {
       const data = localStoreData;
-      data.splice(deletedItemIndex, 1);
+
+      for(var i = 0; i < data.length; i++){
+        if(data[i].id == deletedItemIndex){
+          data.splice(i, 1);
+        }
+      }
+      
       
       updateStateData(data);
 
