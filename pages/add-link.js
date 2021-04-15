@@ -24,9 +24,11 @@ export default function AddLink() {
   //Form Submit
   const handleSubmit  = () => {
     if(newItem.title != '' && newItem.url != ''){
-      allData.unshift(newItem);
+      allData.push(newItem);
+      
       localStorage.setItem('data',JSON.stringify(allData));
       setshowNotification(true);
+
       setTimeout(() => {
         setshowNotification(false);
         router.push('/');
