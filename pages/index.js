@@ -120,7 +120,7 @@ export default function Home() {
       }
 
       setLocalStoreData(JSON.parse(localStorage.getItem("data")));
-      localStorage.setItem('orderType',0);    
+      //localStorage.setItem('orderType',0);    
     },[]);
 
 
