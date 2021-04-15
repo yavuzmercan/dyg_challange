@@ -13,10 +13,12 @@ export default function Home() {
     //Define Variable
     const [storedData, setStoredData] = useState([
         {
+            "id" :1,
             "title": "İlk Kayıt",
             "url": "http://www.google.com",
             "vote": 0,
         }, {
+            "id" :2,
             "title": "İkinci Kayıt",
             "url": "http://www.google.com",
             "vote": 0,
@@ -31,21 +33,32 @@ export default function Home() {
     const [dataPerPage] = useState(5)
 
     //Up Vote Button
-    const handleVoteUp = (index) => {
+    const handleVoteUp = (id) => {
       const data = localStoreData;
-      data[index].vote += 1;
-
+      
+      for(var i = 0; i < data.length; i++){
+        if(data[i].id == id){
+          data[i].vote += 1;
+        }
+      }
+      
       updateStateData(data);
     }
 
     //Down Vote Button
-    const handleVoteDown = (index) => {
+    const handleVoteDown = (id) => {
       const data = localStoreData;
-      if(data[index].vote > 0){
-        data[index].vote -= 1;
 
-        updateStateData(data);
+
+      for(var i = 0; i < data.length; i++){
+        if(data[i].id == id){
+          if(data[i].vote > 0){
+            data[i].vote -= 1;
+          }
+          
+        }
       }
+        updateStateData(data);
     }
 
     //Update Data
@@ -157,10 +170,9 @@ export default function Home() {
                            {
                           currentData.map((item,index) => ( <Items 
                                   key={index} 
-                                  deleteItem={() => handleDeleteItem(index)}
-                                  voteUpFunc={() => handleVoteUp(index)} 
-                                  voteDownFunc={() => handleVoteDown(index)} 
-                                  index={item.id} 
+                                  deleteItem={() => handleDeleteItem(item.id)}
+                                  voteUpFunc={() => handleVoteUp(item.id)} 
+                                  voteDownFunc={() => handleVoteDown(item.id)} 
                                   item={item}/>
                             ))
                           } 
